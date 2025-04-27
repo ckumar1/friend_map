@@ -67,9 +67,11 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <div className="max-w-7xl mx-auto h-[90vh] flex flex-col">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Friend Map
-        </h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            Ship Friend Map
+          </h1>
+        </div>
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
           <div className="lg:col-span-2 flex flex-col min-h-0">
             <div className="flex-1 min-h-0 relative">
