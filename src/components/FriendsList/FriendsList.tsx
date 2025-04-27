@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useMemo } from 'react';
 import { Location } from '../../types';
 import LocationGroup from './LocationGroup';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -21,37 +21,42 @@ const FriendsList = ({ locations, onLocationSelect }: FriendsListProps) => {
   };
 
   // Only filter at the friend level for search
-  const filterLocations = (locs: Location[]): Location[] => {
-    return locs
-      .map(location => {
-        if (location.children && location.children.length > 0) {
-          const filteredChildren = filterLocations(location.children);
-          return {
-            ...location,
-            children: filteredChildren,
-            friends: [] // Don't show friends at this level if children exist
-          };
-        } else {
-          // Leaf node: filter friends
-          const filteredFriends = location.friends.filter(friend =>
-            friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            friend.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            friend.location.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-          return {
-            ...location,
-            friends: filteredFriends
-          };
-        }
-      })
-      .filter(location =>
-        (location.children && location.children.length > 0) ||
-        (location.friends && location.friends.length > 0)
-      );
-  };
+  const filterLocations = useMemo(() => {
+    const filter = (locs: Location[]): Location[] => {
+      return locs
+        .map(location => {
+          if (location.children && location.children.length > 0) {
+            const filteredChildren = filter(location.children);
+            return {
+              ...location,
+              children: filteredChildren,
+              friends: [] // Don't show friends at this level if children exist
+            };
+          } else {
+            // Leaf node: filter friends
+            const filteredFriends = location.friends.filter(friend =>
+              friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              friend.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              friend.location.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            return {
+              ...location,
+              friends: filteredFriends
+            };
+          }
+        })
+        .filter(location =>
+          (location.children && location.children.length > 0) ||
+          (location.friends && location.friends.length > 0)
+        );
+    };
+    
+    return searchQuery ? filter(locations) : locations;
+  }, [locations, searchQuery]);
 
-  const filteredLocations = searchQuery ? filterLocations(locations) : locations;
-  const totalFriends = locations.reduce((sum, location) => sum + (location.friends?.length || 0), 0);
+  const totalFriends = useMemo(() => locations.reduce(
+    (sum, location) => sum + (location.friends?.length || 0), 0
+  ), [locations]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
@@ -74,8 +79,8 @@ const FriendsList = ({ locations, onLocationSelect }: FriendsListProps) => {
       </div>
 
       <div className="space-y-2">
-        {filteredLocations.length > 0 ? (
-          filteredLocations.map((location) => (
+        {filterLocations.length > 0 ? (
+          filterLocations.map((location) => (
             <LocationGroup
               key={location.id}
               location={location}
@@ -94,4 +99,4 @@ const FriendsList = ({ locations, onLocationSelect }: FriendsListProps) => {
   );
 };
 
-export default FriendsList; 
+export default memo(FriendsList); 

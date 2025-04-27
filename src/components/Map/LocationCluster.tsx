@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -59,11 +59,6 @@ const LocationCluster = ({ locations, map, onLocationSelect }: LocationClusterPr
         // @ts-expect-error: custom property for clustering
         marker.friendNames = (location.friends || []).map(friend => friend.name);
         
-        // Debug log to ensure friendNames is set
-        console.log(`Setting friendNames for ${location.name}:`, 
-          // @ts-expect-error: custom property for clustering
-          marker.friendNames
-        );
         const popup = L.popup({
           closeButton: false,
           closeOnClick: false,
@@ -193,4 +188,4 @@ const LocationCluster = ({ locations, map, onLocationSelect }: LocationClusterPr
   return null;
 };
 
-export default LocationCluster; 
+export default memo(LocationCluster); 

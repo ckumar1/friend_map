@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Location } from '../../types';
@@ -31,21 +31,10 @@ const Map = ({ locations, selectedLocation, onLocationSelect }: MapProps) => {
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    if (!mapContainer.current) {
-      console.error('Map container not found');
-      return;
-    }
-
-    console.log('Starting map initialization...');
-    console.log('Map container dimensions:', {
-      width: mapContainer.current.offsetWidth,
-      height: mapContainer.current.offsetHeight,
-      style: window.getComputedStyle(mapContainer.current)
-    });
+    if (!mapContainer.current) return;
 
     try {
       // Initialize map
-      console.log('Creating Leaflet map instance...');
       map.current = L.map(mapContainer.current, {
         center: [39.8283, -98.5795], // Center of US
         zoom: 3,
@@ -54,65 +43,40 @@ const Map = ({ locations, selectedLocation, onLocationSelect }: MapProps) => {
         renderer: L.canvas() // Force canvas renderer for better performance
       });
 
-      console.log('Map instance created:', map.current);
-
       // Add tile layer
-      console.log('Adding tile layer...');
-      const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
         minZoom: 1
-      });
-      tileLayer.addTo(map.current);
-      console.log('Tile layer added:', tileLayer);
+      }).addTo(map.current);
 
       // Add controls
-      console.log('Adding controls...');
-      const zoomControl = L.control.zoom({
+      L.control.zoom({
         position: 'topright'
-      });
-      zoomControl.addTo(map.current);
+      }).addTo(map.current);
 
-      const attributionControl = L.control.attribution({
+      L.control.attribution({
         position: 'bottomright'
-      });
-      attributionControl.addTo(map.current);
-      console.log('Controls added');
+      }).addTo(map.current);
 
       // Handle map load
       const handleLoad = () => {
-        console.log('Map load event fired, map instance:', map.current);
-        console.log('Map state after load:', {
-          center: map.current?.getCenter(),
-          zoom: map.current?.getZoom(),
-          bounds: map.current?.getBounds()
-        });
         setMapLoaded(true);
         setError(undefined);
       };
 
-      // Add both one-time and regular load event listeners
       map.current.once('load', handleLoad);
       map.current.on('load', handleLoad);
 
-      // Add a layeradd event listener to verify layers are being added
-      map.current.on('layeradd', (e) => {
-        console.log('Layer added:', e.layer);
-      });
-
       // Handle errors
-      map.current.on('error', (e) => {
-        console.error('Map error:', e);
+      map.current.on('error', () => {
         setError('Failed to load map. Please try refreshing the page.');
       });
 
       // Force a resize event to ensure the map is properly sized
       setTimeout(() => {
-        console.log('Triggering map resize...');
         map.current?.invalidateSize();
-        // Force a load event if it hasn't fired yet
         if (!mapLoaded) {
-          console.log('Forcing load event...');
           map.current?.fire('load');
         }
       }, 100);
@@ -120,21 +84,18 @@ const Map = ({ locations, selectedLocation, onLocationSelect }: MapProps) => {
       // Handle resize
       const handleResize = () => {
         if (map.current) {
-          console.log('Handling map resize');
           map.current.invalidateSize();
         }
       };
       window.addEventListener('resize', handleResize);
 
       return () => {
-        console.log('Cleaning up map');
         window.removeEventListener('resize', handleResize);
         if (map.current) {
           map.current.remove();
         }
       };
-    } catch (err) {
-      console.error('Failed to initialize map:', err);
+    } catch {
       setError('Failed to initialize map. Please try refreshing the page.');
     }
   }, []);
@@ -178,21 +139,15 @@ const Map = ({ locations, selectedLocation, onLocationSelect }: MapProps) => {
         className="absolute inset-0 w-full h-full bg-gray-100 map-container"
         style={{ minHeight: '500px' }}
       />
-      {(() => {
-        console.log('Map render state:', { mapLoaded, mapExists: !!map.current, locationsCount: locations.length });
-        return null;
-      })()}
       {mapLoaded && map.current && (
-        <>
-          <LocationCluster
-            locations={locations}
-            map={map.current!}
-            onLocationSelect={onLocationSelect}
-          />
-        </>
+        <LocationCluster
+          locations={locations}
+          map={map.current}
+          onLocationSelect={onLocationSelect}
+        />
       )}
     </div>
   );
 };
 
-export default Map; 
+export default memo(Map); 

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Location } from '../../types';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
@@ -16,13 +17,6 @@ const LocationGroup = ({
 }: LocationGroupProps) => {
   const isExpanded = expandedGroups.includes(location.id);
   const Icon = isExpanded ? ChevronDownIcon : ChevronRightIcon;
-
-  console.log('LocationGroup render:', {
-    name: location.name,
-    isExpanded,
-    friendsCount: location.friends.length,
-    friends: location.friends.map(f => f.name)
-  });
 
   return (
     <div className="border rounded-md overflow-hidden mb-2">
@@ -73,4 +67,4 @@ const LocationGroup = ({
   );
 };
 
-export default LocationGroup; 
+export default memo(LocationGroup); 

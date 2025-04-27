@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Location } from './types';
 import Map from './components/Map/Map';
 import FriendsList from './components/FriendsList/FriendsList';
@@ -25,15 +25,10 @@ function App() {
         
         const processedFriends = await geocodingService.processFriends(friendsRaw);
         const groupedLocations = groupFriendsToLocations(processedFriends);
-        console.log('Data loaded and processed:', {
-          friendsCount: friendsRaw.length,
-          locationsCount: groupedLocations.length
-        });
         
         setLocations(groupedLocations);
         setError(undefined);
-      } catch (err) {
-        console.error('Error in data loading process:', err);
+      } catch {
         setError('Failed to load or geocode friends data');
       } finally {
         setLoading(false);
@@ -43,26 +38,30 @@ function App() {
     loadData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading friends data...</p>
-        </div>
+  const loadingContent = useMemo(() => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading friends data...</p>
       </div>
-    );
+    </div>
+  ), []);
+
+  const errorContent = useMemo(() => error && (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-red-500 text-4xl mb-4">⚠️</div>
+        <p className="text-red-500">{error}</p>
+      </div>
+    </div>
+  ), [error]);
+
+  if (loading) {
+    return loadingContent;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <p className="text-red-500">{error}</p>
-        </div>
-      </div>
-    );
+    return errorContent;
   }
 
   return (
@@ -85,7 +84,6 @@ function App() {
             <div className="flex-1 min-h-0 overflow-y-auto">
               <FriendsList
                 locations={locations}
-                selectedLocation={selectedLocation}
                 onLocationSelect={setSelectedLocation}
               />
             </div>
