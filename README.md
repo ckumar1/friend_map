@@ -1,22 +1,25 @@
 # Friend Map
 
-A modern web application that displays your friends' locations on an interactive map with a grouped list view.
+A modern web application that displays your friends' locations on an interactive map with a grouped list view. Built with React and Leaflet, this application provides an intuitive way to visualize and explore your friends' locations across the globe.
 
 ## Features
 
-- Interactive Mapbox GL JS map with clustering
+- Interactive Leaflet map with marker clustering
 - Hierarchical location grouping (Country -> State -> City)
 - Search functionality for locations and friends
 - Responsive design with dark mode support
+- Custom styled popups with friend information
 - Smooth animations and transitions
-- Cached geocoding results
+- Efficient marker clustering for better performance
 
 ## Tech Stack
 
-- React + TypeScript
-- Mapbox GL JS
+- React 18 + TypeScript
+- Leaflet + Leaflet.MarkerCluster
 - Tailwind CSS
 - Vite
+- Headless UI
+- Heroicons
 
 ## Setup
 
@@ -26,17 +29,12 @@ A modern web application that displays your friends' locations on an interactive
    npm install
    ```
 
-3. Create a `.env` file in the root directory and add your Mapbox access token:
-   ```
-   VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
-   ```
-
-4. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
    ```
 
-5. Build for production:
+4. Build for production:
    ```bash
    npm run build
    ```
@@ -59,20 +57,37 @@ friend-map/
 │   │       ├── SearchBar.tsx
 │   │       └── Filters.tsx
 │   ├── services/
-│   │   ├── geocoding.ts
 │   │   └── dataProcessing.ts
 │   ├── types/
 │   │   └── index.ts
 │   ├── utils/
-│   │   ├── locationUtils.ts
-│   │   └── cache.ts
+│   │   └── locationUtils.ts
 │   └── App.tsx
 ├── public/
 │   ├── friends.json
 │   └── index.html
 ├── package.json
-└── tsconfig.json
+├── tsconfig.json
+├── vite.config.ts
+└── tailwind.config.js
 ```
+
+## Development
+
+The project uses several key technologies:
+
+- **Leaflet**: For the interactive map functionality
+- **Leaflet.MarkerCluster**: For efficient marker clustering
+- **Tailwind CSS**: For styling and responsive design
+- **TypeScript**: For type safety and better development experience
+- **Vite**: For fast development and building
+
+### Key Features Implementation
+
+- **Map Clustering**: Uses Leaflet.MarkerCluster to group nearby markers
+- **Location Grouping**: Hierarchical organization of friends by location
+- **Responsive Design**: Built with Tailwind CSS for mobile-first approach
+- **Type Safety**: Full TypeScript implementation for better code quality
 
 ## Contributing
 
