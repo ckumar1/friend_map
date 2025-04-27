@@ -175,7 +175,7 @@ const Map = ({ locations, selectedLocation, onLocationSelect }: MapProps) => {
     <div className="relative w-full h-full rounded-lg overflow-hidden">
       <div 
         ref={mapContainer} 
-        className="absolute inset-0 w-full h-full bg-gray-100"
+        className="absolute inset-0 w-full h-full bg-gray-100 map-container"
         style={{ minHeight: '500px' }}
       />
       {(() => {

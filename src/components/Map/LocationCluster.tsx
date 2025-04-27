@@ -71,12 +71,16 @@ const LocationCluster = ({ locations, map, onLocationSelect }: LocationClusterPr
         })
           .setLatLng([location.coordinates[1], location.coordinates[0]])
           .setContent(`
-            <div class="p-2">
-              <h3 class="font-bold">${location.name}</h3>
-              <p class="text-sm text-gray-600">${location.friends?.length ?? 0} friends</p>
-              <ul>
-                ${(location.friends || []).map(friend => `<li>${friend.name}</li>`).join('')}
-              </ul>
+            <div class="popup-content">
+              <h3>${location.name}</h3>
+              <p>${location.friends?.length ?? 0} ${location.friends?.length === 1 ? 'friend' : 'friends'} in this area</p>
+              ${location.friends?.length ? `
+                <ul>
+                  ${(location.friends || []).map(friend => `
+                    <li>
+                      <span class="font-medium">${friend.name}</span>
+                    </li>`).join('')}
+                </ul>` : ''}
             </div>
           `);
         el.addEventListener('click', () => onLocationSelect(location));
@@ -138,7 +142,7 @@ const LocationCluster = ({ locations, map, onLocationSelect }: LocationClusterPr
       // Gather all cities and their friends in the cluster
       const cityData: { name: string; friends: string[] }[] = markers.map(marker => {
         // @ts-expect-error: custom property for clustering
-        const cityName = marker.getPopup()?.getContent()?.match(/<h3 class="font-bold">(.*?)<\/h3>/)?.[1] || '';
+        const cityName = marker.getPopup()?.getContent()?.match(/<h3>(.*?)<\/h3>/)?.[1] || '';
         // @ts-expect-error: custom property for clustering
         const friendNames = marker.friendNames || [];
         return { name: cityName, friends: friendNames };
@@ -146,7 +150,22 @@ const LocationCluster = ({ locations, map, onLocationSelect }: LocationClusterPr
       // Remove duplicates by city name
       const uniqueCities = Array.from(new Map(cityData.map(c => [c.name, c])).values());
       if (uniqueCities.length > 0) {
-        const popupContent = `<div class='p-2'><div class='font-bold mb-1'>Cities in this cluster:</div><ul>${uniqueCities.map(city => `<li><b>${city.name}</b>${city.friends.length > 0 ? ': ' + city.friends.join(', ') : ''}</li>`).join('')}</ul></div>`;
+        const popupContent = `
+          <div class="popup-content">
+            <h3>${uniqueCities.length} ${uniqueCities.length === 1 ? 'City' : 'Cities'} in this area</h3>
+            <ul>
+              ${uniqueCities.map(city => `
+                <li>
+                  <b>${city.name}</b>
+                  ${city.friends.length > 0 ? 
+                    `<div class="mt-1 ml-2">
+                      ${city.friends.map(friend => `<span class="friend-tag">${friend}</span>`).join('')}
+                    </div>` : 
+                    ''}
+                </li>`).join('')}
+            </ul>
+          </div>
+        `;
         clusterPopup = L.popup({ closeButton: false, offset: L.point(0, -20) })
           .setLatLng(cluster.getLatLng())
           .setContent(popupContent)

@@ -2,37 +2,178 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: 59, 130, 246; /* Blue-500 */
+  --color-secondary: 124, 58, 237; /* Purple-600 */
+  --color-success: 16, 185, 129; /* Green-500 */
+  --color-warning: 245, 158, 11; /* Amber-500 */
+  --color-danger: 239, 68, 68; /* Red-500 */
+}
+
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100;
+    @apply font-sans;
   }
 }
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-colors;
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 ease-in-out;
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700;
+    @apply bg-primary-600 text-white hover:bg-primary-700 shadow-sm hover:shadow-md;
   }
   
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4;
+    @apply bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 transition-all duration-300;
+    @apply hover:shadow-md;
+  }
+  
+  .map-container {
+    @apply rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-700;
+  }
+  
+  .popup-content {
+    @apply text-sm font-medium bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg;
+    min-width: 200px;
+    max-width: 300px;
+    border-left: 4px solid rgba(var(--color-primary), 1);
+  }
+  
+  .popup-content h3 {
+    @apply text-lg font-bold text-primary-600 dark:text-primary-400 mb-2;
+    border-bottom: 1px solid rgba(var(--color-primary), 0.2);
+    padding-bottom: 0.5rem;
+  }
+  
+  .popup-content p {
+    @apply text-slate-700 dark:text-slate-300 mb-3 font-medium;
+  }
+  
+  .popup-content ul {
+    @apply mt-3 space-y-2 text-slate-700 dark:text-slate-300;
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .popup-content li {
+    @apply px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-all;
+    border-left: 2px solid rgba(var(--color-primary), 0.6);
+    padding-left: 8px;
   }
 }
 
+/* Leaflet popup styling */
+.leaflet-popup-content-wrapper {
+  @apply shadow-lg rounded-lg overflow-hidden;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+.leaflet-popup-tip {
+  @apply bg-white dark:bg-slate-800;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.2);
+}
+
+/* Friend tag styling */
+.friend-tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  margin: 0.1rem;
+  background-color: rgba(var(--color-primary), 0.15);
+  color: rgba(var(--color-primary), 1);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.friend-tag:hover {
+  background-color: rgba(var(--color-primary), 0.25);
+  transform: translateY(-1px);
+}
+
 .custom-cluster-icon {
-  background: hwb(128 17% 34% / 0.637);
+  background: rgba(var(--color-primary), 0.9);
   color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  font-size: 1rem;
-  width: 40px;
-  height: 40px;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.9rem;
+  width: 44px;
+  height: 44px;
+  transition: all 0.2s ease;
+}
+
+.custom-cluster-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Friend marker animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.friend-marker:hover {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Better cluster appearance */
+.marker-cluster-small {
+  background-color: rgba(var(--color-primary), 0.6) !important;
+}
+.marker-cluster-medium {
+  background-color: rgba(var(--color-secondary), 0.6) !important;
+}
+.marker-cluster-large {
+  background-color: rgba(var(--color-warning), 0.6) !important;
+}
+
+/* Add subtle hover effects to interactive elements */
+.interactive {
+  @apply transition-all duration-200;
+}
+
+.interactive:hover {
+  @apply transform -translate-y-0.5;
+}
+
+/* Improved scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-primary), 0.5);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-primary), 0.7);
 } 
